@@ -1,49 +1,103 @@
 package de.davis.passgen.characterset
 
+import kotlin.random.Random
+
 /**
- * Interface representing a character set used in password generation.
+ * Represents a set of characters that can be used for generating strings.
+ * This class is sealed, meaning it cannot be extended outside this file.
+ *
+ * @property characters The string containing the characters in this set.
  */
-sealed interface CharacterSet {
+sealed class CharacterSet(characters: String) {
 
     /**
-     * Retrieves the characters belonging to the character set.
-     * @return A string containing the characters of the set.
+     * Constructs a [CharacterSet] from a range of characters.
+     *
+     * @param start The start character of the range (inclusive).
+     * @param end The end character of the range (inclusive).
      */
-    fun getChars(): String
+    constructor(start: Char, end: Char) : this((start..end).joinToString(""))
 
     /**
-     * Represents the set of lowercase letters (a-z).
+     * The string containing the characters in this set.
      */
-    data object Lower : CharacterSet {
-        override fun getChars(): String = ('a'..'z').joinToString("")
+    var characters = characters
+        private set
+
+    /**
+     * Shuffles the characters in this set using the provided [Random] instance.
+     *
+     * @param random The [Random] instance to use for shuffling. If not provided, a default [Random] instance will be used.
+     */
+    fun shuffle(random: Random = Random) {
+        characters = characters.toCharArray().apply { shuffle(random) }.joinToString("")
     }
 
     /**
-     * Represents the set of uppercase letters (A-Z).
+     * Returns the characters in this set as a string.
+     *
+     * @return The string containing the characters in this set.
+     * @deprecated Deprecated in favor of the `characters` field.
      */
-    data object Upper : CharacterSet {
-        override fun getChars(): String = ('A'..'Z').joinToString("")
-    }
+    @Deprecated("Deprecated in favor of characters field", ReplaceWith("characters"))
+    fun getChars(): String = characters
 
     /**
-     * Represents the set of digits (0-9).
+     * Concatenates this [CharacterSet] with another [CharacterSet] and returns a new [Custom] instance containing the combined characters.
+     *
+     * @param characterSet The [CharacterSet] to concatenate with this instance.
+     * @return A new [Custom] instance containing the combined characters.
      */
-    data object Digits : CharacterSet {
-        override fun getChars(): String = ('0'..'9').joinToString("")
-    }
+    operator fun plus(characterSet: CharacterSet) = Custom(characters + characterSet.characters)
 
     /**
-     * Represents a set of common punctuation characters.
+     * Checks if the provided [Char] is contained in this [CharacterSet].
+     *
+     * @param char The [Char] to check for containment.
+     * @return `true` if the [Char] is contained in this [CharacterSet], `false` otherwise.
      */
-    data object Punctuations : CharacterSet {
-        override fun getChars(): String = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
-    }
+    operator fun contains(char: Char) = char in characters
 
     /**
-     * Represents a custom character set defined by a specific string of characters.
-     * @property characters The custom characters for the set.
+     * Checks if the provided [CharSequence] is contained in this [CharacterSet].
+     *
+     * @param charSequence The [CharSequence] to check for containment.
+     * @return `true` if all characters in the [CharSequence] are contained in this [CharacterSet], `false` otherwise.
      */
-    data class Custom(val characters: String) : CharacterSet {
-        override fun getChars(): String = characters
-    }
+    operator fun contains(charSequence: CharSequence) = charSequence.all { it in characters }
+
+    /**
+     * Checks if the provided [CharacterSet] is contained in this [CharacterSet].
+     *
+     * @param characterSet The [CharacterSet] to check for containment.
+     * @return `true` if all characters in the provided [CharacterSet] are contained in this [CharacterSet], `false` otherwise.
+     */
+    operator fun contains(characterSet: CharacterSet) = characterSet.characters in this
+
+    /**
+     * A pre-defined [CharacterSet] containing lowercase letters.
+     */
+    data object Lowercase : CharacterSet('a', 'z')
+
+    /**
+     * A pre-defined [CharacterSet] containing uppercase letters.
+     */
+    data object Uppercase : CharacterSet('A', 'Z')
+
+    /**
+     * A pre-defined [CharacterSet] containing digits.
+     */
+    data object Digits : CharacterSet('0', '9')
+
+    /**
+     * A pre-defined [CharacterSet] containing punctuation characters.
+     */
+    data object Punctuations : CharacterSet("!\"#\$%&'()*+,-./:;<=>?@[\\]^_`{|}~")
+
+    /**
+     * A custom [CharacterSet] that can be created with a provided string of characters.
+     *
+     * @param characters The string containing the characters for the custom set.
+     */
+    class Custom(characters: String) : CharacterSet(characters)
 }
