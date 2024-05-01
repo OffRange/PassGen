@@ -1,12 +1,19 @@
 package de.davis.passgen.demo
 
-import de.davis.passgen.generatePassword
+import de.davis.passgen.configs.digits
+import de.davis.passgen.configs.lowercase
+import de.davis.passgen.configs.punctuations
+import de.davis.passgen.configs.uppercase
+import de.davis.passgen.generators.Password
+import de.davis.passgen.generators.generate
 
 fun main(args: Array<String>) {
     println(args.joinToString())
-    if (args.isEmpty() || args[0].equals("-w", ignoreCase = true))
+    if (args.isEmpty() || args[0].equals("-w", ignoreCase = true)) {
+        // Show wizzard for generating a password
         startWizard()
-    else if (args[0].equals("-b", ignoreCase = true)) {
+    } else if (args[0].equals("-b", ignoreCase = true)) {
+        // Start a benchmark
         doBenchmark()
     } else
         error("-w or -w expected")
@@ -23,7 +30,7 @@ fun doBenchmark(
     val times = mutableListOf<Long>()
     repeat(iterations) {
         val (duration, _) = mesTime {
-            generatePassword {
+            generate(Password) {
                 if (lower)
                     lowercase()
 
@@ -43,7 +50,7 @@ fun doBenchmark(
         times.add(duration)
     }
 
-    println("AVG: ${times.average() / 1e6}")
+    println("AVG: ${times.average() / 1e6}ms")
 }
 
 fun startWizard() {
@@ -59,7 +66,7 @@ fun startWizard() {
     val length = readLength(8)
 
     val (duration, password) = mesTime {
-        generatePassword {
+        generate(Password) {
             if (lower)
                 lowercase()
 
@@ -77,9 +84,8 @@ fun startWizard() {
     }
 
     println("----------------------------------------")
-    println("Generated password : ${password.value}")
+    println("Generated password : $password")
     println("Length             : ${password.length}")
-    println("Used characters    : ${password.usedCharacterSets.joinToString()}")
     println("Created in         : ${duration / 1e6} ms")
 }
 

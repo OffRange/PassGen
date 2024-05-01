@@ -3,15 +3,14 @@ plugins {
 }
 
 group = 'de.davis.passgen.demo'
-version = '1.0-SNAPSHOT'
+version = '1.0'
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    implementation 'com.github.offrange:passgen:v0.0.1-beta'
+    implementation project(":")
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 }
 
