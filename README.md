@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.offrange:passgen:tag")
+    implementation("com.github.offrange:passgen:v0.0.2-beta")
 }
 ```
 
@@ -41,21 +41,19 @@ Then, include the PassGen dependency:
 <dependency>
     <groupId>com.github.offrange</groupId>
     <artifactId>passgen</artifactId>
-    <version>tag</version>
+    <version>v0.0.2-beta</version>
 </dependency>
 ```
-
-Replace `your-username` with your GitHub username and `tag` with the desired release tag or commit hash.
 
 ## Usage
 
 ### Basic Password Generation
 
-Generate a password using lowercase letters, uppercase letters, digits, and punctuations:
+Generate a password using lowercase letters, uppercase letters, digits, and punctuations that is 12 characters long:
 
 ```kotlin
 fun main() {
-    val password = generatePassword {
+    val password = generate(Password) {
         lowercase()
         uppercase()
         digits()
@@ -63,7 +61,7 @@ fun main() {
         length(12)
     }
 
-    println("Generated Password: ${password.value}")
+    println("Generated Password: $password")
 }
 ```
 
@@ -75,12 +73,12 @@ include the necessary character sets:
 
 ```kotlin
 fun main() {
-    val password = generatePassword {
+    val password = generate(Password) {
         alphanumeric()
-        length(10)
+        length(12)
     }
 
-    println("Generated Alphanumeric Password: ${password.value}")
+    println("Generated Alphanumeric Password: $password")
 }
 ```
 
@@ -92,14 +90,12 @@ Create a password using a custom character set:
 fun main() {
     val customCharacterSet = CharacterSet.Custom("ABC123")
 
-    val password = generatePassword {
-        custom { characterSets ->
-            characterSets.add(customCharacterSet)
-        }
+    val password = generate(Password) {
+        custom(customCharacterSet)
         length(8)
     }
 
-    println("Generated Password with Custom Character Set: ${password.value}")
+    println("Generated Password with Custom Character Set: $password")
 }
 ```
 
@@ -113,10 +109,8 @@ fun main() {
     val customCharacterSet2 = CharacterSet.Custom("123")
 
     val password = generatePassword {
-        custom { characterSets ->
-            characterSets.add(customCharacterSet1)
-            characterSets.add(customCharacterSet2)
-        }
+        +customCharacterSet1 // Same as custom(customCharacterSet1)
+        +customCharacterSet2 // Same as custom(customCharacterSet2)
         length(10)
     }
 
