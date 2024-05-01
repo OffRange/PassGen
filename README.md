@@ -108,7 +108,7 @@ fun main() {
     val customCharacterSet1 = CharacterSet.Custom("ABC")
     val customCharacterSet2 = CharacterSet.Custom("123")
 
-    val password = generatePassword {
+    val password = generate(Password) {
         +customCharacterSet1 // Same as custom(customCharacterSet1)
         +customCharacterSet2 // Same as custom(customCharacterSet2)
         length(10)
