@@ -13,7 +13,7 @@ import java.net.URI
 fun main(args: Array<String>) {
     println(args.joinToString())
     if (args.isEmpty() || args[0].equals("-w", ignoreCase = true)) {
-        // Show wizzard for generating a password
+        // Show wizard for generating a password
         startWizard()
     } else if (args[0].equals("-b", ignoreCase = true)) {
         // Start a benchmark
