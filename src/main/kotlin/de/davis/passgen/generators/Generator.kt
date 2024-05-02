@@ -3,6 +3,7 @@ package de.davis.passgen.generators
 import de.davis.passgen.configs.GeneratorConfiguration
 import de.davis.passgen.configs.verified
 import de.davis.passgen.markers.GeneratorDsl
+import de.davis.passgen.pool.GenerationPool
 import java.security.SecureRandom
 import kotlin.random.Random
 import kotlin.random.asKotlinRandom
@@ -14,6 +15,7 @@ import kotlin.random.asKotlinRandom
  * of various types of string generators, such as password generators, random string generators, or
  * other custom generators, by providing the appropriate configuration.
  *
+ * @param GenerationType The type that is stored in the [GenerationPool]
  * @param Config The type of the configuration class that extends [GeneratorConfiguration]. This class
  *               defines the configuration options for the generator.
  * @property createConfig A lambda function that provides the configuration object for the generator.
@@ -22,7 +24,7 @@ import kotlin.random.asKotlinRandom
  *                  a secure random instance is used, but this can be overridden if needed.
  */
 @GeneratorDsl
-abstract class Generator<Config : GeneratorConfiguration>(
+abstract class Generator<GenerationType, Config : GeneratorConfiguration<GenerationType>>(
     val createConfig: () -> Config,
     val random: Random = SecureRandom().asKotlinRandom()
 ) {
@@ -37,7 +39,7 @@ abstract class Generator<Config : GeneratorConfiguration>(
 }
 
 /**
- * A type alias representing a function that configures an object of type C.
+ * A type alias representing a function that configures an object of type `C`.
  */
 typealias ConfigDeclaration<C> = C.() -> Unit
 
@@ -49,8 +51,8 @@ typealias ConfigDeclaration<C> = C.() -> Unit
  * @return The generated string.
  */
 @GeneratorDsl
-inline fun <Config : GeneratorConfiguration> generate(
-    generator: Generator<Config>,
+inline fun <GenerationType, Config : GeneratorConfiguration<GenerationType>> generate(
+    generator: Generator<GenerationType, Config>,
     configure: ConfigDeclaration<Config>
 ): String = generator.run {
     generate(createConfig().apply(configure).verified())

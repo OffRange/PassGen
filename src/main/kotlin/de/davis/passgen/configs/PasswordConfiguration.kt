@@ -1,58 +1,48 @@
 package de.davis.passgen.configs
 
-import de.davis.passgen.characterset.CharacterSet
 import de.davis.passgen.markers.ConfigDsl
+import de.davis.passgen.pool.GenerationPool
 
 /**
- * A configuration class for the password generator.
- * This class extends [GeneratorConfiguration] and provides additional properties and functions
- * for configuring the generation of passwords.
+ * Represents a configuration for generating passwords.
+ * Inherits from [GeneratorConfiguration] with elements of type [Char].
  */
 @ConfigDsl
-class PasswordGeneratorConfig : GeneratorConfiguration() {
+class PasswordGeneratorConfig : GeneratorConfiguration<Char>() {
 
     /**
-     * Flag indicating whether character sets should be evenly distributed when generating passwords.
-     * If set to true, character sets will be evenly distributed; otherwise, they will be randomly selected.
+     * Determines whether character pools are evenly distributed. Default value is false.
      */
     @ConfigDsl
-    var charSetsEvenlyDistributed = false
+    var poolsEvenlyDistributed = false
 }
 
 /**
- * Adds a custom character set to the password generator configuration.
- *
- * @param characterSet The custom character set to be added.
+ * Adds lowercase characters to the character pools configuration.
  */
 @ConfigDsl
-fun PasswordGeneratorConfig.custom(characterSet: CharacterSet) = +characterSet
+fun PasswordGeneratorConfig.lowercase() = +GenerationPool.Lowercase
 
 /**
- * Adds the lowercase character set to the password generator configuration.
+ * Adds uppercase characters to the character pools configuration.
  */
 @ConfigDsl
-fun PasswordGeneratorConfig.lowercase() = +CharacterSet.Lowercase
+fun PasswordGeneratorConfig.uppercase() = +GenerationPool.Uppercase
 
 /**
- * Adds the uppercase character set to the password generator configuration.
+ * Adds digit characters to the character pools configuration.
  */
 @ConfigDsl
-fun PasswordGeneratorConfig.uppercase() = +CharacterSet.Uppercase
+fun PasswordGeneratorConfig.digits() = +GenerationPool.Digits
 
 /**
- * Adds the digits character set to the password generator configuration.
+ * Adds punctuation characters to the character pools configuration.
  */
 @ConfigDsl
-fun PasswordGeneratorConfig.digits() = +CharacterSet.Digits
+fun PasswordGeneratorConfig.punctuations() = +GenerationPool.Punctuations
 
 /**
- * Adds the punctuations character set to the password generator configuration.
- */
-@ConfigDsl
-fun PasswordGeneratorConfig.punctuations() = +CharacterSet.Punctuations
-
-/**
- * Configures the password generator to include alphanumeric characters (lowercase, uppercase, digits, and punctuations).
+ * Adds alphanumeric characters (lowercase, uppercase, digits, punctuations) to the character pools configuration.
  */
 @ConfigDsl
 fun PasswordGeneratorConfig.alphanumeric() {
