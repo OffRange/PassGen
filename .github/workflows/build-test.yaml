@@ -8,6 +8,9 @@ on:
 
 jobs:
   build:
+    permissions:
+      actions: read
+      contents: read
     name: Build and Run Tests
     runs-on: ubuntu-latest
     steps:
