@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "de.davis.passgen"
-version = "0.0.2-beta"
+version = "0.0.3-beta"
 
 repositories {
     mavenCentral()
