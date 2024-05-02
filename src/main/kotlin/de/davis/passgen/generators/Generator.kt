@@ -1,6 +1,7 @@
 package de.davis.passgen.generators
 
 import de.davis.passgen.configs.GeneratorConfiguration
+import de.davis.passgen.configs.verified
 import de.davis.passgen.markers.GeneratorDsl
 import java.security.SecureRandom
 import kotlin.random.Random
@@ -52,5 +53,5 @@ inline fun <Config : GeneratorConfiguration> generate(
     generator: Generator<Config>,
     configure: ConfigDeclaration<Config>
 ): String = generator.run {
-    generate(createConfig().apply(configure))
+    generate(createConfig().apply(configure).verified())
 }

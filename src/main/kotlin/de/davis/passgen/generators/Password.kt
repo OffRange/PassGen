@@ -16,9 +16,6 @@ class Password {
          * @throws IllegalArgumentException If no character sets are specified in the configuration.
          */
         override fun generate(config: PasswordGeneratorConfig): String {
-            if (config.characterSets.isEmpty())
-                throw IllegalArgumentException("To generate a password, you must specify at least one character set!")
-
             val range = (1..config.length)
 
             if (config.charSetsEvenlyDistributed) {

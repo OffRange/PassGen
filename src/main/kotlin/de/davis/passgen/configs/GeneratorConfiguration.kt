@@ -65,3 +65,26 @@ open class GeneratorConfiguration {
         this.length = length
     }
 }
+
+
+/**
+ * Verifies the given configuration by checking if it meets a certain condition.
+ *
+ * This extension function checks if the provided [Config] instance meets a specific condition
+ * defined by the implementation. If the condition is not met, it throws an exception with an
+ * appropriate error message. If the condition is met, the function returns the same [Config] instance
+ * without any modifications.
+ *
+ * The specific condition to be checked and the error message to be thrown in case of failure should
+ * be defined by the implementation of this function for different types of configurations.
+ *
+ * @receiver The [Config] instance to be verified.
+ * @return The same [Config] instance if it meets the defined condition.
+ * @throws IllegalArgumentException If the [Config] instance does not meet the defined condition.
+ */
+fun <Config : GeneratorConfiguration> Config.verified(): Config {
+    if (characterSets.isEmpty())
+        throw IllegalArgumentException("To generate a password, you must specify at least one character set!")
+
+    return this
+}
