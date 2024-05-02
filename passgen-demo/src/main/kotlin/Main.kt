@@ -1,11 +1,14 @@
 package de.davis.passgen.demo
 
-import de.davis.passgen.configs.digits
-import de.davis.passgen.configs.lowercase
-import de.davis.passgen.configs.punctuations
-import de.davis.passgen.configs.uppercase
+import de.davis.passgen.configs.*
+import de.davis.passgen.generators.Passphrase
 import de.davis.passgen.generators.Password
 import de.davis.passgen.generators.generate
+import de.davis.passgen.pool.toStringPool
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.URI
+
 
 fun main(args: Array<String>) {
     println(args.joinToString())
@@ -54,6 +57,28 @@ fun doBenchmark(
 }
 
 fun startWizard() {
+    println("What do you want to generate?")
+    println("y: Password")
+    println("n: Passphrase")
+    if (readBool("What should it be?")) startPasswordWizard() else startPassphraseWizard()
+}
+
+fun PassphraseConfiguration.loadFromWeb(urlStr: String) {
+    val url = URI(urlStr).toURL()
+    val bufferedReader = BufferedReader(InputStreamReader(url.openStream()))
+
+    val lines = mutableListOf<String>()
+    bufferedReader.use {
+        var line: String?
+        while (bufferedReader.readLine().also { line = it } != null) {
+            lines.add(line!!)
+        }
+    }
+
+    +lines.toStringPool()
+}
+
+fun startPasswordWizard() {
     val lower = readBool("Should the password contain lowercase letters?")
     val upper = readBool("Should the password contain uppercase letters?")
     val digits = readBool("Should the password contain digits?")
@@ -89,6 +114,24 @@ fun startWizard() {
     println("Created in         : ${duration / 1e6} ms")
 }
 
+fun startPassphraseWizard() {
+    val length = readLength(8)
+
+    val (duration, passphrase) = mesTime {
+        generate(Passphrase) {
+            length(length)
+            println("Fetching english words from https://raw.githubusercontent.com/dolph/dictionary/master/popular.txt")
+            loadFromWeb("https://raw.githubusercontent.com/dolph/dictionary/master/popular.txt")
+        }
+    }
+
+    println("----------------------------------------")
+    println("Generated passphrase : $passphrase")
+    println("Words                : ${passphrase.split('-').count()}")
+    println("Total length         : ${passphrase.length}")
+    println("Created in           : ${duration / 1e6} ms")
+}
+
 fun <R> mesTime(l: () -> R): Pair<Long, R> {
     val start = System.nanoTime()
     val r = l()
@@ -103,7 +146,7 @@ fun readBool(msg: String): Boolean {
 }
 
 fun readLength(defaultVal: Int = 8): Int {
-    print("How long should the password be? [$defaultVal]: ")
+    print("How long should the string be? [$defaultVal]: ")
     val result = readln()
 
     return result.toIntOrNull() ?: defaultVal
