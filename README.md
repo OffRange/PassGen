@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.offrange:passgen:v0.0.2-beta")
+    implementation("com.github.offrange:passgen:v0.0.3-beta")
 }
 ```
 
@@ -41,7 +41,7 @@ Then, include the PassGen dependency:
 <dependency>
     <groupId>com.github.offrange</groupId>
     <artifactId>passgen</artifactId>
-    <version>v0.0.2-beta</version>
+    <version>v0.0.3-beta</version>
 </dependency>
 ```
 
@@ -69,7 +69,7 @@ fun main() {
 
 Generate an alphanumeric password (including lowercase letters, uppercase letters, digits, and punctuations)
 using `alphanumeric()`. This function internally utilizes the functions defined in the example above to
-include the necessary character sets:
+include the necessary generation pools:
 
 ```kotlin
 fun main() {
@@ -82,39 +82,55 @@ fun main() {
 }
 ```
 
-### Custom Character Sets
+### Custom Generation Pools
 
-Create a password using a custom character set:
+Create a password using a custom generation pool:
 
 ```kotlin
 fun main() {
-    val customCharacterSet = CharacterSet.Custom("ABC123")
+    val customPool = "ABC123".toCharPool() // Same as GenerationPool.fromString("ABC1234")
 
     val password = generate(Password) {
-        custom(customCharacterSet)
+        custom(customPool)
         length(8)
     }
 
-    println("Generated Password with Custom Character Set: $password")
+    println("Generated Password with Custom Generation Pool: $password")
 }
 ```
 
-### Multiple Custom Character Sets
+### Multiple Custom Generation Pools
 
-Combine multiple custom character sets to generate a password:
+Combine multiple custom generation pools to generate a password:
 
 ```kotlin
 fun main() {
-    val customCharacterSet1 = CharacterSet.Custom("ABC")
-    val customCharacterSet2 = CharacterSet.Custom("123")
+    val customPool1 = "ABC".toCharPool()
+    val customPool2 = "123".toCharPool()
 
     val password = generate(Password) {
-        +customCharacterSet1 // Same as custom(customCharacterSet1)
-        +customCharacterSet2 // Same as custom(customCharacterSet2)
+        +customPool1 // Same as custom(customPool1)
+        +customPool2 // Same as custom(customPool2)
         length(10)
     }
 
-    println("Generated Password with Multiple Custom Character Sets: ${password.value}")
+    println("Generated Password with Multiple Custom Generation Pools: $password")
+}
+```
+
+### Generate Passphrases
+
+In addition to generating passwords, you can use the library to generate passphrases.
+
+```kotlin
+fun main() {
+    val passphrase = generate(Passphrase) {
+        separator = '-' // Default separator between words
+        custom(GenerationPool.fromStrings("word1", "word2", "word3")) // Add custom words to the passphrase pool
+        loadFile(File("path/to/wordlist")) // Load words from a file as entries in the passphrase pool
+    }
+
+    println("Generated Passphrase: $passphrase")
 }
 ```
 

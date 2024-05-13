@@ -7,29 +7,28 @@ import de.davis.passgen.configs.PasswordGeneratorConfig
  */
 class Password {
 
-    companion object : Generator<PasswordGeneratorConfig>(::PasswordGeneratorConfig) {
+    /**
+     * Companion object for generating passwords.
+     */
+    companion object : Generator<Char, PasswordGeneratorConfig>(::PasswordGeneratorConfig) {
 
         /**
          * Generates a password string based on the current configuration.
          *
+         * @param config The configuration object to use for generating the password.
          * @return The generated password string.
-         * @throws IllegalArgumentException If no character sets are specified in the configuration.
+         * @throws IllegalArgumentException If no generation pools are specified in the configuration.
          */
-        override fun generate(config: PasswordGeneratorConfig): String {
-            val range = (1..config.length)
-
-            if (config.charSetsEvenlyDistributed) {
-                val generated = range.map {
-                    val charSet = config.characterSets.random(random)
-                    charSet.characters.random(random)
+        override fun generate(config: PasswordGeneratorConfig): String = config.run {
+            if (poolsEvenlyDistributed) {
+                return range.joinToString("") {
+                    val pool = pools.random(random)
+                    pool.random(random).toString()
                 }
-
-                return generated.joinToString("")
             }
 
-            val characterSet = config.characterSets.reduce { acc, characterSet -> acc + characterSet }
-            val generated = range.map { characterSet.characters.random(random) }
-            return generated.joinToString("")
+            val pool = pools.reduce { acc, characterSet -> acc + characterSet }
+            return range.joinToString("") { pool.random(random).toString() }
         }
     }
 }

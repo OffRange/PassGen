@@ -1,26 +1,22 @@
 package de.davis.passgen.configs
 
-import de.davis.passgen.characterset.CharacterSet
 import de.davis.passgen.markers.ConfigDsl
+import de.davis.passgen.pool.GenerationPool
 
 /**
- * A sealed class representing the configuration for a string generator.
- * This class provides properties and functions for configuring the character sets
- * and length of the generated string.
+ * Represents a configuration for generating elements of type [GenerationType].
+ * This class provides settings for the generation process such as length and character pools.
+ * @param GenerationType The type of elements to generate.
  */
 @ConfigDsl
-open class GeneratorConfiguration {
+open class GeneratorConfiguration<GenerationType> {
+
+    private val _pools = mutableSetOf<GenerationPool<GenerationType>>()
+    val pools get() = _pools.toList()
 
     /**
-     * The set of character sets to be used for generating the string.
-     */
-    private val _characterSets = mutableSetOf<CharacterSet>()
-    val characterSets get() = _characterSets.toList()
-
-    /**
-     * The desired length of the generated string.
-     *
-     * @throws IllegalArgumentException If the length is set to a non-positive value.
+     * The length of the generated elements. Default value is 8.
+     * @throws IllegalArgumentException if the specified length is not positive.
      */
     @ConfigDsl
     var length = 8
@@ -32,40 +28,49 @@ open class GeneratorConfiguration {
         }
 
     /**
-     * Adds the specified [CharacterSet] to the set of character sets used for generating the string.
-     *
-     * @receiver The [CharacterSet] to be added.
-     * @throws IllegalArgumentException If the specified [CharacterSet] has already been added.
+     * Returns a range from 1 to the current length.
      */
-    @ConfigDsl
-    operator fun CharacterSet.unaryPlus() = addCharacterSet(this)
+    val range get() = (1..length)
 
     /**
-     * Adds the specified [CharacterSet] to the set of character sets used for generating the string.
+     * Adds the specified generation pool to the configuration.
      *
-     * @param characterSet The [CharacterSet] to be added.
-     * @throws IllegalArgumentException If the specified [CharacterSet] has already been added.
+     * @receiver The character pool to add.
      */
     @ConfigDsl
-    protected fun addCharacterSet(characterSet: CharacterSet) {
-        _characterSets.firstOrNull { it == characterSet }?.let {
-            throw IllegalArgumentException("There is already a character set for $characterSet")
+    operator fun GenerationPool<GenerationType>.unaryPlus() = addPool(this)
+
+    /**
+     * Adds the specified generation pool to the configuration.
+     * @param generationPool The generation pool to add.
+     * @throws IllegalArgumentException if a generation pool with the same content already exists.
+     */
+    @ConfigDsl
+    protected fun addPool(generationPool: GenerationPool<GenerationType>) {
+        _pools.firstOrNull { it == generationPool || it in generationPool }?.let {
+            throw IllegalArgumentException("There is already a generation pool like $generationPool registered")
         }
 
-        _characterSets.add(characterSet)
+        _pools.add(generationPool)
     }
 
     /**
-     * Sets the desired length of the generated string.
+     * Adds a custom generation pool to the configuration.
      *
-     * @param length The desired length of the generated string.
+     * @param pool The custom character pool to add.
+     */
+    @ConfigDsl
+    fun custom(pool: GenerationPool<GenerationType>) = +pool
+
+    /**
+     * Sets the length of the generated elements.
+     * @param length The length to set.
      */
     @ConfigDsl
     fun length(length: Int) {
         this.length = length
     }
 }
-
 
 /**
  * Verifies the given configuration by checking if it meets a certain condition.
@@ -82,9 +87,9 @@ open class GeneratorConfiguration {
  * @return The same [Config] instance if it meets the defined condition.
  * @throws IllegalArgumentException If the [Config] instance does not meet the defined condition.
  */
-fun <Config : GeneratorConfiguration> Config.verified(): Config {
-    if (characterSets.isEmpty())
-        throw IllegalArgumentException("To generate a password, you must specify at least one character set!")
+fun <GenerationType, Config : GeneratorConfiguration<GenerationType>> Config.verified(): Config {
+    if (pools.isEmpty())
+        throw IllegalArgumentException("To generate a password, you must specify at least one generation pool!")
 
     return this
 }
