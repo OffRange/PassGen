@@ -58,9 +58,13 @@ fun doBenchmark(
 
 fun startWizard() {
     println("What do you want to generate?")
-    println("y: Password")
-    println("n: Passphrase")
-    if (readBool("What should it be?")) startPasswordWizard() else startPassphraseWizard()
+    println("1: Password")
+    println("2: Passphrase")
+    when(readInt("What should it be?", 1..2)) {
+        1 -> startPasswordWizard()
+        2 -> startPassphraseWizard()
+        else -> error("Invalid choice")
+    }
 }
 
 fun PassphraseConfiguration.loadFromWeb(urlStr: String) {
@@ -143,6 +147,13 @@ fun readBool(msg: String): Boolean {
     val result = readln()
 
     return result.equals("y", ignoreCase = true)
+}
+
+fun readInt(msg: String, range: IntRange): Int {
+    print("$msg [${range.start} - ${range.endInclusive}]: ")
+    val result = readln()
+
+    return result.toIntOrNull() ?: readInt(msg, range)
 }
 
 fun readLength(defaultVal: Int = 8): Int {
