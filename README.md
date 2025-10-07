@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.offrange:passgen:v0.1.0-beta")
+    implementation("com.github.offrange:passgen:0.1.0-beta")
 }
 ```
 
@@ -41,7 +41,7 @@ Then, include the PassGen dependency:
 <dependency>
     <groupId>com.github.offrange</groupId>
     <artifactId>passgen</artifactId>
-    <version>v0.1.0-beta</version>
+    <version>0.1.0-beta</version>
 </dependency>
 ```
 
