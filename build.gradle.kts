@@ -1,9 +1,9 @@
 plugins {
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") version "2.2.20"
 }
 
 group = "de.davis.passgen"
-version = "0.0.3-beta"
+version = "0.1.0-beta"
 
 repositories {
     mavenCentral()
@@ -17,5 +17,5 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }
